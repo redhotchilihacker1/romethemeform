@@ -1,0 +1,522 @@
+<?php
+
+class Rform_GDPR extends \Elementor\Widget_Base
+{
+    public function get_name()
+    {
+        return 'rform-gdpr-widget';
+    }
+
+    public function get_title()
+    {
+        return __('GDPR Consent', 'romethemeform');
+    }
+
+    public function get_icon()
+    {
+        return 'rform-widget-icon rtmicon rtmicon-checkbox';
+    }
+
+    public function get_categories()
+    {
+        return ['romethemeform_form_fields'];
+    }
+
+    public function show_in_panel()
+    {
+        return 'romethemeform_form' === get_post_type();
+    }
+
+    public function get_style_depends()
+    {
+        return ['rform-checkbox-style', 'rform-gdpr-style', 'rtform-text-style'];
+    }
+
+    public function get_script_depends()
+    {
+        return ['rform-gdpr-js'];
+    }
+
+    protected function register_controls()
+    {
+        $this->start_controls_section(
+            'content_section',
+            [
+                'label' => __('Content', 'elementor'),
+                'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
+            ]
+        );
+
+        $this->add_control(
+            'show_label',
+            [
+                'label' => esc_html__('Show Label', 'romethemeform'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => esc_html__('Show', 'romethemeform'),
+                'label_off' => esc_html__('Hide', 'romethemeform'),
+                'return_value' => 'yes',
+                'default' => 'yes',
+                'description' => esc_html__("for adding label on input turn it on. Don't want to use label? turn it off.", 'romethemeform')
+            ]
+        );
+
+        $this->add_control('label_position', [
+            'label' => esc_html__('Position', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::SELECT,
+            'options' => [
+                'rform-label-top' => esc_html__('Top', 'romethemeform'),
+                'rform-label-left' => esc_html__('Left', 'romethemefom-plugin')
+            ],
+            'default' => 'rform-label-top',
+            'description' => esc_html__('Select label position. where you want to see it. top of the input or left of the input.', 'romethemeform'),
+            'condition' => [
+                'show_label' => 'yes'
+            ]
+        ]);
+
+        $this->add_control('label_text', [
+            'label' => esc_html__('Label', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::TEXT,
+            'default' => esc_html__('GDPR Consent', 'romethemeform'),
+            'condition' => [
+                'show_label' => 'yes'
+            ]
+        ]);
+
+
+        $this->add_control('name_input', [
+            'label' => esc_html__('Name', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::TEXT,
+            'default' => esc_html__('rform-gdpr-consent', 'romethemeform'),
+            'description' => esc_html__('Name is must required. Enter name without space or any special character. use only underscore/ hyphen (_/-) for multiple word. Name must be different.', 'romethemeform')
+        ]);
+
+        $this->add_control('option_text_position', [
+            'label' => esc_html('Option Text Position :'),
+            'type' => \Elementor\Controls_Manager::SELECT,
+            'options' => [
+                'after' => esc_html('After checkbox'),
+                'before' => esc_html('Before checkbox'),
+            ],
+            'default' => 'after',
+        ]);
+
+        $this->add_control('gdpr_text', [
+            'label' => esc_html__('GDPR Consent Text', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::TEXTAREA,
+            'default' => "Agree on our <a href='#'>terms and condition</a> for using your submitted data ?",
+        ]);
+
+        $this->add_control('help_text', [
+            'label' => esc_html__('Help Text', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::TEXTAREA,
+            'placeholder' => esc_html__('Type your help text here', 'romethemeform'),
+        ]);
+
+        $this->end_controls_section();
+
+        $this->start_controls_section('label_style', [
+            'label' => esc_html__('Label', 'romethemeform'),
+            'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            'condition' => [
+                'show_label' => 'yes'
+            ]
+        ]);
+
+        $this->add_responsive_control(
+            'label_align',
+            [
+                'label' => esc_html__('Label Position', 'romethemeform'),
+                'type' => \Elementor\Controls_Manager::CHOOSE,
+                'options' => [
+                    'start' => [
+                        'title' => esc_html__('Top', 'romethemeform'),
+                        'icon' => 'eicon-v-align-top',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'romethemeform'),
+                        'icon' => 'eicon-v-align-middle',
+                    ],
+                    'end' => [
+                        'title' => esc_html__('Bottom', 'romethemeform'),
+                        'icon' => 'eicon-v-align-bottom',
+                    ],
+                ],
+                'default' => 'center',
+                'toggle' => true,
+                'selectors' => [
+                    '{{WRAPPER}} .rform-label-input' => 'align-items: {{VALUE}};',
+                ],
+                'condition' => [
+                    'label_position' => 'rform-label-left'
+                ]
+            ]
+        );
+
+        $this->add_responsive_control('label_width', [
+            'label' => esc_html__('Width', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::SLIDER,
+            'size_units' => ['px', '%', 'em', 'rem'],
+            'range' => [
+                'px' => ['min' => 0, 'max' => 1000, 'step' => 1],
+                '%' => ['min' => 0, 'max' => 100],
+                'em' => ['min' => 0, 'max' => 50],
+                'rem' => ['min' => 0, 'max' => 50],
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rform-label-input' => 'width:{{SIZE}}{{UNIT}}'
+            ],
+            'condition' => [
+                'label_position' => 'rform-label-left'
+            ]
+        ]);
+
+        $this->add_control('label_color', [
+            'label' => esc_html__('Color', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-label-input' => 'color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'label_typography',
+                'selector' => '{{WRAPPER}} .rform-label-input',
+            ]
+        );
+
+        $this->add_responsive_control('label_padding', [
+            'label' => esc_html__('Padding', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::DIMENSIONS,
+            'size_units' => ['px', '%', 'em', 'rem'],
+            'selectors' => [
+                '{{WRAPPER}} .rform-label-input' => 'padding:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}'
+            ]
+        ]);
+
+        $this->add_responsive_control('label_margin', [
+            'label' => esc_html__('Margin', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::DIMENSIONS,
+            'size_units' => ['px', '%', 'em', 'rem'],
+            'default' => [
+                'top' => '0',
+                'right' => '0',
+                'bottom' => '10',
+                'left' => '0',
+                'unit' => 'px',
+                'isLinked' => 'false',
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rform-label-input' => 'margin:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}'
+            ]
+        ]);
+
+        $this->end_controls_section();
+
+        $this->start_controls_section('checkbox_style', [
+            'label' => esc_html('Checkbox'),
+            'tab' => \Elementor\Controls_Manager::TAB_STYLE
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'option_typography',
+                'selector' => '{{WRAPPER}} .rform-checkboxbtn-container',
+            ]
+        );
+
+        $this->add_responsive_control('checkbox_position', [
+            'label' => esc_html('Checkbox Position'),
+            'type' => \Elementor\Controls_Manager::SELECT,
+            'options' => [
+                'inline-block' => esc_html('Inline'),
+                'inline-flex' => esc_html('Flex')
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .rform-gdpr-container' => 'display: {{VALUE}}'
+            ]
+        ]);
+
+        $this->add_responsive_control(
+            'checkbox_align',
+            [
+                'label' => esc_html__('Alignment', 'textdomain'),
+                'type' => \Elementor\Controls_Manager::CHOOSE,
+                'options' => [
+                    'start' => [
+                        'title' => esc_html__('Top', 'textdomain'),
+                        'icon' => 'eicon-v-align-top',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'textdomain'),
+                        'icon' => 'eicon-v-align-middle',
+                    ],
+                    'end' => [
+                        'title' => esc_html__('Bottom', 'textdomain'),
+                        'icon' => 'eicon-v-align-bottom',
+                    ],
+                ],
+                'default' => 'center',
+                'toggle' => true,
+                'selectors' => [
+                    '{{WRAPPER}} .rform-gdpr-container' => 'align-items: {{VALUE}};',
+                ],
+                'condition' => [
+                    'checkbox_position' => 'inline-flex'
+                ]
+            ]
+        );
+
+        $this->add_responsive_control(
+            'option_padding',
+            [
+                'label' => esc_html__('Padding', 'textdomain'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors' => [
+                    '{{WRAPPER}} .rform-checkboxbtn-container' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'checkbox_spacing',
+            [
+                'label' => esc_html__('Checkbox Spacing', 'textdomain'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'em', 'rem', 'custom'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1000,
+                        'step' => 5,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .rform-gdpr-container.after .rform-gdpr-checbox' => 'margin-right: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .rform-gdpr-container.before .rform-gdpr-checbox' => 'margin-left: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+        $this->add_control(
+            'checkbox_size',
+            [
+                'label' => esc_html__('Checkbox Size', 'textdomain'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1000,
+                        'step' => 5,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .rform-checkbox-checkmark' => 'width: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'checkmark_size',
+            [
+                'label' => esc_html__('Checkmark Size', 'textdomain'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1000,
+                        'step' => 5,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .rform-checkbox-checkmark:after' => 'font-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+
+
+        $this->start_controls_tabs('option_tabs');
+
+        $this->start_controls_tab('option_tab_normal', ['label' => esc_html('Normal')]);
+
+        $this->add_control('option_text_color_normal', [
+            'label' => esc_html('Text Color'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container' => 'color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_control('option_checkbox_color_normal', [
+            'label' => esc_html('Checkbox Background'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container input:not(:checked) ~ .rform-checkbox-checkmark' => 'background-color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'border_option_normal',
+                'selector' => '{{WRAPPER}} .rform-checkboxbtn-container input:not(:checked) ~ .rform-checkbox-checkmark',
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab('option_tab_hover', ['label' => esc_html('Hover')]);
+
+        $this->add_control('option_text_color_hover', [
+            'label' => esc_html('Text Color'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container:hover' => 'color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_control('option_checkbox_color_hover', [
+            'label' => esc_html('Checkbox Background'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container:hover input:not(:checked) ~ .rform-checkbox-checkmark' => 'background-color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'border_option_hover',
+                'selector' => '{{WRAPPER}} .rform-checkboxbtn-container:hover input:not(:checked) ~ .rform-checkbox-checkmark',
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab('option_tab_checked', ['label' => esc_html('Checked')]);
+
+        $this->add_control('option_checkbox_color_checked', [
+            'label' => esc_html('Checkbox Color'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container input:checked ~ .rform-checkbox-checkmark:after' => 'color:{{VALUE}}'
+            ]
+        ]);
+
+
+        $this->add_control('option_checkbox_bgcolor_checked', [
+            'label' => esc_html('Checkbox Background'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-checkboxbtn-container input:checked ~ .rform-checkbox-checkmark' => 'background-color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'border_option_checked',
+                'selector' => '{{WRAPPER}} .rform-checkboxbtn-container input:checked ~ .rform-checkbox-checkmark',
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
+
+        $this->end_controls_section();
+
+        $this->start_controls_section('help_text_style', [
+            'label' => esc_html__('Help Text', 'romethemeform'),
+            'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            'condition' => [
+                'help_text!' => ''
+            ]
+        ]);
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'help_text_typography',
+                'selector' => '{{WRAPPER}} .rform-help-text',
+            ]
+        );
+
+        $this->add_control('help_text_color', [
+            'label' => esc_html__('Color', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .rform-help-text' => 'color:{{VALUE}}'
+            ]
+        ]);
+
+        $this->add_responsive_control('help_text_padding', [
+            'label' => esc_html__('Padding', 'romethemeform'),
+            'type' => \Elementor\Controls_Manager::DIMENSIONS,
+            'size_units' => ['px', '%', 'em', 'rem'],
+            'selectors' => [
+                '{{WRAPPER}} .rform-help-text' => 'padding:{{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}'
+            ]
+        ]);
+
+        $this->end_controls_section();
+    }
+
+    protected function render()
+    {
+        $settings = $this->get_settings_for_display();
+
+?>
+        <div class="rform-container">
+            <div class="rform-control <?php echo esc_attr($settings['label_position']) ?>">
+                <?php if ('yes' === $settings['show_label']) : ?>
+                    <label class="rform-label-input" for="rform-input-text-<?php echo $this->get_id_int(); ?>">
+                        <?php echo esc_html__($settings['label_text'], 'romethemeform') ?>
+                    </label>
+                <?php endif; ?>
+                <div class="rform-checkbox-gdpr">
+                    <label class="rform-checkboxbtn-container rform-gdpr-container <?php echo esc_attr($settings['option_text_position']) ?>">
+                        <?php if ($settings['option_text_position'] === 'after') : ?>
+                            <div class="rform-gdpr-checbox">
+                                <input class="checkbox-gdpr" type="checkbox" value="true" name="<?Php echo esc_attr($settings['name_input']) ?>" required>
+                                <span class="rform-checkbox-checkmark"></span>
+                            </div>
+                        <?php endif; ?>
+                        <span class="rform-checkbox-label">
+                            <?php echo wp_kses_post($settings['gdpr_text']) ?>
+                        </span>
+                        <?php if ($settings['option_text_position'] === 'before') : ?>
+                            <div class="rform-gdpr-checbox">
+                                <input class="checkbox-gdpr" type="checkbox" value="true" name="<?Php echo esc_attr($settings['name_input']) ?>" required>
+                                <span class="rform-checkbox-checkmark"></span>
+                            </div>
+                        <?php endif; ?>
+                    </label>
+                </div>
+            </div>
+            <span role="alert" class="rform-error" id="rform-input-err-<?php echo $this->get_id_int(); ?>"><?php echo esc_html__($settings['warning_message'], 'romethemeform') ?></span>
+            <div class="rform-help-text">
+                <span><?php echo esc_html__($settings['help_text'], 'romethemeform') ?></span>
+            </div>
+        </div>
+<?php
+    }
+}
